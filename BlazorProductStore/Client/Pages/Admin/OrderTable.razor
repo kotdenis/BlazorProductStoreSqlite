@@ -1,0 +1,47 @@
+﻿
+<table class="table table-sm table-striped table-bordered">
+    <thead>
+        <tr><th colspan="5" class="text-center">@TableTitle</th></tr>
+    </thead>
+    <tbody>
+        @if (CompletedOrders != null && CompletedOrders.Count > 0)
+        {
+            foreach (var completedOrders in CompletedOrders)
+            {
+                <tr>
+                    <td>@completedOrders.Name</td>
+                    <td>@completedOrders.Zip</td>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="@(e => OrderSelected.InvokeAsync(completedOrders.OrderId))">
+                            @ButtonLabel
+                        </button>
+                    </td>
+                </tr>
+                foreach (var cartline in completedOrders.CartLineVMs)
+                {
+                    <tr>
+                        <td colspan="2"></td>
+                        <td>@cartline.Name</td>
+                        <td>@cartline.Quantity</td>
+                        <td></td>
+                    </tr>
+                }
+            }
+        }
+        
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public string TableTitle { get; set; } = "Orders";    [Parameter]    public List<CompletedOrder> CompletedOrders { get; set; }
+
+    [Parameter]
+    public string ButtonLabel { get; set; } = "Ship";
+
+    [Parameter]
+    public EventCallback<int> OrderSelected { get; set; }
+}

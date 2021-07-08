@@ -1,0 +1,12 @@
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\bin\Release\net5.0\BlazorProductStore.Shared.deps.json
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\bin\Release\net5.0\BlazorProductStore.Shared.dll
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\bin\Release\net5.0\ref\BlazorProductStore.Shared.dll
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\bin\Release\net5.0\BlazorProductStore.Shared.pdb
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.csproj.AssemblyReference.cache
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.AssemblyInfoInputs.cache
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.AssemblyInfo.cs
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.csproj.CoreCompileInputs.cache
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.dll
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\ref\BlazorProductStore.Shared.dll
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Shared\obj\Release\net5.0\BlazorProductStore.Shared.pdb

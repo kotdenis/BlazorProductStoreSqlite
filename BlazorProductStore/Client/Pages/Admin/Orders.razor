@@ -1,0 +1,64 @@
+﻿@page "/admin/orders"
+@layout AdminLayout
+@inject IAdminService adminService
+@inject IJSRuntime jsRuntime
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+<OrderTable TableTitle="Unshipped Orders" CompletedOrders="UnshippedOrders"
+            ButtonLabel="Ship" OrderSelected="ShipOrder"></OrderTable>
+
+<OrderTable TableTitle="Shipped Orders" CompletedOrders="ShippedOrders"
+            ButtonLabel="Reset" OrderSelected="ResetOrder"></OrderTable>
+
+<button class="btn btn-info" @onclick="@(e => UpdateData())">Refresh Data</button>
+
+<CascadingValue Value="@Message">
+    <MessageModal CloseModal="@CloseMessageModal"></MessageModal>
+</CascadingValue>
+
+@code {
+
+    private List<CompletedOrder> AllOrders { get; set; } = new List<CompletedOrder>();
+    private List<CompletedOrder> UnshippedOrders { get; set; } = new List<CompletedOrder>();
+    private List<CompletedOrder> ShippedOrders { get; set; } = new List<CompletedOrder>();
+    private string Message { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        AllOrders = await adminService.GetAllOrdersAsync();
+        UnshippedOrders = AllOrders.Where(x => x.Shipped == false).ToList();
+        ShippedOrders = AllOrders.Where(x => x.Shipped == true).ToList();
+    }
+
+    private async Task ShipOrder(int id) => await UpdateOrder(id, true);
+    private async Task ResetOrder(int id) => await UpdateOrder(id, false);
+
+    private async Task UpdateOrder(int id, bool shipValue)
+    {
+        var completedOrder = AllOrders.Where(x => x.OrderId == id).FirstOrDefault();
+        completedOrder.Shipped = shipValue;
+        var response = await adminService.UpdateOrderAsync(completedOrder);
+        if (response.IsSuccessStatusCode)
+        {
+            Message = await response.Content.ReadAsStringAsync();
+            await jsRuntime.InvokeVoidAsync("ShowMessageModal");
+        }
+        else
+        {
+            Message = await response.Content.ReadAsStringAsync();
+            await jsRuntime.InvokeVoidAsync("ShowMessageModal");
+        }
+    }
+
+    private void CloseMessageModal()
+    {
+        jsRuntime.InvokeVoidAsync("HideMessageModal");
+    }
+}
