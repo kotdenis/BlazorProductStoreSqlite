@@ -18,11 +18,11 @@ namespace BlazorProductStore.Server.Controllers
     [Authorize(AuthenticationSchemes = "Identity.Application, Bearer")]
     public class AdminController : ControllerBase
     {
-        private readonly TestProductDbContext _context;
+       
         private readonly ILogger<AdminController> _logger;
-        public AdminController(TestProductDbContext context, ILogger<AdminController> logger)
+        public AdminController(ILogger<AdminController> logger)
         {
-            _context = context;
+            
             _logger = logger;
         }
 
@@ -31,6 +31,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 List<CompletedOrder> completedOrders = new List<CompletedOrder>();
                 List<CartLineVM> cartLineVMs;
                 var orders = await _context.Orders.ToListAsync();
@@ -80,6 +81,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 var order = _context.Orders.Where(x => x.Id == completedOrder.OrderId).FirstOrDefault();
                 order.Shipped = completedOrder.Shipped == true ? (sbyte)1 : (sbyte)0;
                 _context.Entry(order).State = EntityState.Modified;
@@ -99,6 +101,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 _context.Entry(product).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
@@ -116,6 +119,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 await _context.Products.AddAsync(product);
                 await _context.SaveChangesAsync();
 
@@ -133,6 +137,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 _context.Entry(product).State = EntityState.Deleted;
                 await _context.SaveChangesAsync();
 

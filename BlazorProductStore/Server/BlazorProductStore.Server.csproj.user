@@ -7,5 +7,6 @@
     <ActiveDebugProfile>BlazorProductStore.Server</ActiveDebugProfile>
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
+    <NameOfLastUsedPublishProfile>C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Server\Properties\PublishProfiles\FTPProfile23.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

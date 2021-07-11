@@ -9,11 +9,7 @@ namespace BlazorProductStore.Shared.Models
 {
     public partial class Product
     {
-        public Product()
-        {
-            Cartlines = new HashSet<Cartline>();
-        }
-
+        
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Please enter a product name")]
@@ -29,7 +25,5 @@ namespace BlazorProductStore.Shared.Models
 
         [Required(ErrorMessage = "Please specify a category")]
         public string Category { get; set; }
-
-        public virtual ICollection<Cartline> Cartlines { get; set; }
     }
 }

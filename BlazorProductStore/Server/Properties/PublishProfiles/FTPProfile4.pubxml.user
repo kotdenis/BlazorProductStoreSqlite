@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Этот файл используется процессом публикации или упаковки вашего веб-проекта. Можно настроить поведение этого процесса,
+изменив этот файл MSBuild. Подробности см. на странице https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAIR40bevbj06hc8RM2GslCAAAAAACAAAAAAAQZgAAAAEAACAAAADNBkbFWCT4yOyLQUeowJKDqZZjcHz3jF10MbTK5suUsQAAAAAOgAAAAAIAACAAAABV7RL8Ol9bbcAbc5w5NSYLoM0bq+k7znpnSewZsWxLCSAAAAB4vMXTLzWVlpb+kIMxlZe2o5pVeSonJB5dHx/E5oPaNUAAAADQ+bC9Ez00VT1s8zxXrJKN2j/ECF04HkJe2eX90rYlWGD2gpzvdVCNhQmh+bwajwzrgFzZYUD1Dxcuc5neR/Sw</EncryptedPassword>
+    <_PublishTargetUrl>ftp://155.254.244.30/ftp://155.254.244.30/www.kotdeniss.somee.com</_PublishTargetUrl>
+    <History>False|2021-07-09T15:57:57.1025044Z;</History>
+  </PropertyGroup>
+</Project>

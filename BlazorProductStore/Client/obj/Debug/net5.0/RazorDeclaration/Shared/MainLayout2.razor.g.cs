@@ -132,7 +132,7 @@ using Microsoft.AspNetCore.Components.Authorization;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 21 "C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\Shared\MainLayout2.razor"
+#line 26 "C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\Shared\MainLayout2.razor"
       
 
     [CascadingParameter]

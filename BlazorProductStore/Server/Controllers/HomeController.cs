@@ -16,12 +16,11 @@ namespace BlazorProductStore.Server.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
-        private readonly TestProductDbContext _context;
         private readonly ILogger<HomeController> _logger;
-        public HomeController(TestProductDbContext context, ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger)
         {
-            _context = context;
             _logger = logger;
+            ProductSeed.EnsurePopulated();
         }
 
         [HttpGet]
@@ -29,6 +28,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 var products = await _context.Products.ToListAsync();
                 _logger.LogWarning("GOT PRODUCT " + products.Count.ToString());
                 return Ok(products);
@@ -45,6 +45,7 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
+                using var _context = new ProductDbContext();
                 var orders = new Order()
                 {
                     AddressLine1 = order.AddressLine1,

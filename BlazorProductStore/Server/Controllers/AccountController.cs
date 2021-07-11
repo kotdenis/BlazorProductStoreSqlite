@@ -1,4 +1,8 @@
-﻿using BlazorProductStore.Shared.IdentityModels;
+﻿using BlazorProductStore.Server.Models;
+using BlazorProductStore.Server.Services;
+using BlazorProductStore.Shared.IdentityModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -20,16 +24,13 @@ namespace BlazorProductStore.Server.Controllers
     public class AccountController : ControllerBase
     {
         private readonly ILogger<AccountController> _logger;
-        private readonly SignInManager<IdentityUser> _signinManager;
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
-        public AccountController(ILogger<AccountController> logger, SignInManager<IdentityUser> signinManager,
-            UserManager<IdentityUser> userManager, IConfiguration configuration)
+        private readonly IUserService _userService;
+        public AccountController(ILogger<AccountController> logger, IConfiguration configuration, IUserService userService)
         {
             _logger = logger;
-            _signinManager = signinManager;
-            _userManager = userManager;
             _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -38,42 +39,46 @@ namespace BlazorProductStore.Server.Controllers
             try
             {
                 _logger.LogWarning("Try log");
-                var user = await _userManager.FindByNameAsync(loginModel.UserName);
+                var user = _userService.Authenticate(loginModel.UserName, loginModel.Password);
                 if (user == null)
                     return Unauthorized();
-                var signResult = await _signinManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
 
-                if (signResult.Succeeded)
+                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                byte[] secret = Encoding.ASCII.GetBytes(_configuration["jwtSecret"]);
+
+                var claims = new[]
                 {
-                    await _signinManager.SignInAsync(user, false);
+                    new Claim(ClaimTypes.Name, loginModel.UserName)
+                };
 
-                    JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-                    byte[] secret = Encoding.ASCII.GetBytes(_configuration["jwtSecret"]);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    var claims = new[]
-                    {
-                        new Claim(ClaimTypes.Name, loginModel.UserName)
-                    };
+                var authProperties = new AuthenticationProperties()
+                {
+                    AllowRefresh = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24),
+                    IsPersistent = true
+                };
 
-                    SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
-                    {
-                        Subject = new ClaimsIdentity(claims),
-                        Expires = DateTime.UtcNow.AddHours(24),
-                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256Signature)
-                    };
+                await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                    SecurityToken token = handler.CreateToken(descriptor);
+                SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddHours(24),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256Signature)
+                };
 
-                    _logger.LogWarning("Log in");
+                SecurityToken token = handler.CreateToken(descriptor);
 
-                    return Ok(new UserModel
-                    {
-                        UserName = loginModel.UserName,
-                        Token = handler.WriteToken(token)
-                    });
-                }
-                else
-                    return Unauthorized();
+                _logger.LogWarning("Log in");
+
+                return Ok(new UserModel
+                {
+                    UserName = loginModel.UserName,
+                    Token = handler.WriteToken(token)
+                });
+
             }
             catch (Exception ex)
             {
@@ -87,9 +92,6 @@ namespace BlazorProductStore.Server.Controllers
         {
             try
             {
-                var temp = User.Claims;
-                var mop = User.Identity.IsAuthenticated;
-
                 return new CurrentUser
                 {
                     IsAuthenticated = User.Identity.IsAuthenticated,
@@ -110,7 +112,7 @@ namespace BlazorProductStore.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signinManager.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok();
         }
     }

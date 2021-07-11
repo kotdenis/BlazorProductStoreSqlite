@@ -1,4 +1,6 @@
 using BlazorProductStore.Server.Models;
+using BlazorProductStore.Server.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,8 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BlazorProductStore.Server
 {
@@ -18,6 +22,10 @@ namespace BlazorProductStore.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            using var context = new ProductDbContext();
+            context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
 
         public IConfiguration Configuration { get; }
@@ -26,37 +34,35 @@ namespace BlazorProductStore.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("MySqlDb");
-            var identityConnection = Configuration.GetConnectionString("MyIdentityDb");
+            services.AddScoped<IUserService, UserService>();
 
-            services.AddDbContext<TestProductDbContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-            services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseMySql(identityConnection, ServerVersion.AutoDetect(identityConnection)));
-
-            services.Configure<IdentityOptions>(config =>
-            {
-                config.Password.RequireDigit = true;
-                config.Password.RequiredLength = 8;
-                config.Password.RequireUppercase = true;
-                config.Password.RequireNonAlphanumeric = false;
-            });
+            //var connectionString = Configuration.GetConnectionString("MySQLite");
+            //services.AddDbContext<ProductDbContext>(options => options.UseSqlite(""));
 
             services.AddAuthentication(optios =>
             {
-                optios.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                optios.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                optios.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                optios.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                optios.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-                optios.RequireAuthenticatedSignIn = false;
+                optios.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                optios.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                optios.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                optios.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                optios.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-            }).AddJwtBearer(options =>
+            }).AddCookie(options => 
+            {
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(24);
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            })
+            .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 //options.RequireHttpsMetadata = false;
-
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -67,19 +73,21 @@ namespace BlazorProductStore.Server
                 };
                 options.Events = new JwtBearerEvents
                 {
-                    OnTokenValidated = async ctx =>
+                    OnTokenValidated = async context =>
                     {
-                        var usrmgr = ctx.HttpContext.RequestServices.GetRequiredService<UserManager<IdentityUser>>();
-                        var signinmgr = ctx.HttpContext.RequestServices.GetRequiredService<SignInManager<IdentityUser>>();
-                        string username = ctx.Principal.FindFirst(ClaimTypes.Name)?.Value;
-                        IdentityUser idUser = await usrmgr.FindByNameAsync(username);
-                        ctx.Principal = await signinmgr.CreateUserPrincipalAsync(idUser);
+                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                        var userId = int.Parse(context.Principal.Identity.Name);
+                        var user = userService.GetById(userId);
+                        if (user == null)
+                        {
+                            context.Fail("Unauthorized");
+                        }
+                        await Task.CompletedTask;
                     }
                 };
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                 .AddEntityFrameworkStores<AppIdentityDbContext>();
+            services.AddCors();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -106,6 +114,11 @@ namespace BlazorProductStore.Server
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -116,8 +129,18 @@ namespace BlazorProductStore.Server
                 endpoints.MapFallbackToFile("index.html");
             });
 
-            SeedData.EnsurePopulated(app);
-            IdentitySeedData.EnsurePopulated(app);
+            PopulateUser(app);
+        }
+
+        private void PopulateUser(IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+
+            var userService = serviceScope.ServiceProvider.GetRequiredService<IUserService>();
+
+            UserSeed seed = new UserSeed(userService);
+
+            seed.EnsurePopulated();
         }
     }
 }

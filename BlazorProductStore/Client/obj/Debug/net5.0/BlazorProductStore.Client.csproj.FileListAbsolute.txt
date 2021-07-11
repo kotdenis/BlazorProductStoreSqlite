@@ -399,7 +399,6 @@ C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\bin\Deb
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\bin\Debug\net5.0\wwwroot\_framework\dotnet.5.0.7.js
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\bin\Debug\net5.0\wwwroot\_framework\BlazorProductStore.Shared.dll
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\bin\Debug\net5.0\wwwroot\_framework\BlazorProductStore.Shared.pdb
-C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\BlazorProductStore.Client.csproj.AssemblyReference.cache
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\BlazorProductStore.Client.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\BlazorProductStore.Client.AssemblyInfoInputs.cache
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\BlazorProductStore.Client.AssemblyInfo.cs
@@ -668,3 +667,4 @@ C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\bin\Deb
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\build-gz\83y2nutW.gz
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\RazorDeclaration\Pages\Login.razor.g.cs
 C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\Razor\Pages\Login.razor.g.cs
+C:\Users\DENIS\source\repos\BlazorProductStore\BlazorProductStore\Client\obj\Debug\net5.0\BlazorProductStore.Client.csproj.AssemblyReference.cache
